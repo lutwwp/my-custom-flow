@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yusei.dao.ProcessTriggerDao">
+  <resultMap id="BaseResultMap" type="com.yusei.model.entity.ProcessTrigger">
+    <id column="process_trigger_id" property="processTriggerId"/>
+    <result column="process_info_id" property="processInfoId"/>
+    <result column="master_process_definition_key" property="masterProcessDefinitionKey"/>
+    <result column="master_process_definition_id" property="masterProcessDefinitionId"/>
+    <result column="trigger_type" property="triggerType"/>
+    <result column="process_function" property="processFunction"/>
+    <result column="flow_definition_key" property="flowDefinitionKey"/>
+    <result column="slave_form_id" property="slaveFormId"/>
+    <result column="slave_process_definition_key" property="slaveProcessDefinitionKey"/>
+  </resultMap>
+
+  <sql id="Base_field">
+    process_trigger_id, process_info_id, master_process_definition_key, master_process_definition_id,
+    trigger_type, process_function, flow_definition_key, slave_form_id, slave_process_definition_key
+  </sql>
+
+  <insert id="insertBatch" parameterType="com.yusei.model.entity.ProcessTrigger">
+    insert into process_trigger(<include refid="Base_field"/>) values
+    <foreach collection="list" item="item" separator=",">
+      (
+      #{item.processTriggerId}, #{item.processInfoId}, #{item.masterProcessDefinitionKey},
+      #{item.masterProcessDefinitionId}, #{item.triggerType},
+      #{item.processFunction},#{item.flowDefinitionKey},#{item.slaveFormId},#{item.slaveProcessDefinitionKey}
+      )
+    </foreach>
+  </insert>
+
+  <select id="getByProcessInfoId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_field"/>
+    from process_trigger
+    where process_info_id = #{processInfoId}
+  </select>
+
+  <delete id="deleteByProcessInfoId">
+    delete from process_trigger
+    where process_info_id = #{processInfoId}
+  </delete>
+
+  <select id="getByProcessInfoIdAndFunction" resultMap="BaseResultMap">
+    select
+    <include refid="Base_field"/>
+    from process_trigger
+    where
+    process_info_id = #{processInfoId}
+    and process_function = #{processFunction}
+    and trigger_type = 'FUNCTION_TRIGGER'
+  </select>
+
+  <select id="getByProcessInfoIdAndFlowKey" resultMap="BaseResultMap">
+    select
+    <include refid="Base_field"/>
+    from process_trigger
+    where
+    process_info_id = #{processInfoId}
+    and flow_definition_key = #{flowDefinitionKey}
+    and trigger_type = 'FLOW_TRIGGER'
+  </select>
+
+
+</mapper>

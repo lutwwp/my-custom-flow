@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yusei.dao.LinkFilterDao">
+  <resultMap id="BaseResultMap" type="com.yusei.model.entity.LinkFilter">
+    <id column="link_filter_id" property="linkFilterId"/>
+    <result column="link_type" property="linkType"/>
+    <result column="master_field_id" property="masterFieldId"/>
+    <result column="current_form_field_id" property="currentFormFieldId"/>
+    <result column="link_form_field_id" property="linkFormFieldId"/>
+    <result column="method" property="method"/>
+  </resultMap>
+
+  <sql id="Base_Field">
+    link_filter_id, link_type, master_field_id, current_form_field_id, link_form_field_id, method
+  </sql>
+
+  <insert id="insertBatch" parameterType="com.yusei.model.entity.LinkFilter">
+    insert into link_filter(<include refid="Base_Field"/>) values
+    <foreach collection="list" item="item" separator=",">
+      (
+      #{item.linkFilterId}, #{item.linkType}, #{item.masterFieldId}, #{item.currentFormFieldId},
+      #{item.linkFormFieldId}, #{item.method}
+      )
+    </foreach>
+  </insert>
+  <delete id="deleteByFieldIdList">
+    delete from link_filter where
+    master_field_id in
+    <foreach collection="list" item="fieldId" separator="," open="(" close=")">
+      #{fieldId}
+    </foreach>
+
+    or current_form_field_id in
+    <foreach collection="list" item="fieldId" separator="," open="(" close=")">
+      #{fieldId}
+    </foreach>
+
+    or link_form_field_id  in
+    <foreach collection="list" item="fieldId" separator="," open="(" close=")">
+      #{fieldId}
+    </foreach>
+  </delete>
+
+  <select id="getByFieldId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Field"/>
+    from link_filter
+    where master_field_id = #{fieldId}
+  </select>
+
+  <select id="getByCurrentFormFieldId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Field"/>
+    from link_filter
+    where current_form_field_id = #{currentFormFieldId}
+  </select>
+</mapper>

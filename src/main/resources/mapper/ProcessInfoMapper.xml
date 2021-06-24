@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yusei.dao.ProcessInfoDao">
+  <resultMap id="BaseResultMap" type="com.yusei.model.entity.ProcessInfo">
+    <id column="process_info_id" jdbcType="BIGINT" property="processInfoId"/>
+    <result column="form_id" property="formId"/>
+    <result column="process_name" property="processName"/>
+    <result column="process_definition_key" property="processDefinitionKey"/>
+    <result column="process_definition_id" property="processDefinitionId"/>
+    <result column="version" property="version"/>
+    <result column="process_param" property="processParam"/>
+    <result column="process_bytearray" property="processBytearray"/>
+    <result column="process_version" property="processVersion"/>
+    <result column="status" property="status"/>
+    <result column="deleted" property="deleted"/>
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    process_info_id, form_id, process_name, process_definition_key, process_definition_id, version,
+    process_param, process_bytearray, process_version, status, deleted
+  </sql>
+
+  <select id="getLatestVersionByProcessKey" resultType="java.lang.Integer">
+    select max(version) from process_info
+    where process_definition_key = #{processDefinitionKey} and deleted = false
+  </select>
+
+  <insert id="insert" parameterType="com.yusei.model.entity.ProcessInfo">
+    insert into process_info(<include refid="Base_Column_List"/>)
+    values
+    (
+    #{processInfoId},#{formId},#{processName},#{processDefinitionKey},#{processDefinitionId},#{version},
+    #{processParam},#{processBytearray},#{processVersion},#{status},#{deleted}
+    )
+  </insert>
+
+  <update id="updateSelective" parameterType="com.yusei.model.entity.ProcessInfo">
+    update process_info
+    <set>
+      <if test="formId != null">form_id = #{formId},</if>
+      <if test="processName != null">process_name = #{processName},</if>
+      <if test="processDefinitionKey != null">process_definition_key = #{processDefinitionKey},</if>
+      <if test="processDefinitionId != null">process_definition_id = #{processDefinitionId},</if>
+      <if test="version != null">version = #{version},</if>
+      <if test="processParam != null">process_param = #{processParam},</if>
+      <if test="processBytearray != null">process_bytearray = #{processBytearray},</if>
+      <if test="processVersion != null">process_version = #{processVersion},</if>
+      <if test="status != null">status = #{status},</if>
+      <if test="deleted != null">deleted = #{deleted},</if>
+    </set>
+    where process_info_id = #{processInfoId}
+  </update>
+
+  <select id="getProcessInfoByFormId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from process_info
+    where form_id = #{formId} and deleted = false
+    order by status, version desc
+  </select>
+
+  <select id="getProcessInfoById" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from process_info
+    where process_info_id = #{processInfoId}
+  </select>
+
+  <select id="getProcessInfoByProcessDefinitionId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from process_info
+    where process_definition_id = #{processDefinitionId}
+  </select>
+
+  <delete id="deleteProcessInfoById">
+    delete from process_info
+    where process_info_id = #{processInfoId}
+  </delete>
+
+  <update id="unActiveProcess">
+    update process_info
+    set status = 2
+    where status = 1 and process_definition_key = #{processDefinitionKey}
+  </update>
+
+  <update id="updateProcessStatusById">
+    update process_info
+    set status = #{status}
+    where process_info_id = #{processInfoId}
+  </update>
+
+  <update id="setProcessInfoDeleted">
+    update process_info
+    set deleted = true
+    where process_info_id = #{processInfoId}
+  </update>
+
+  <select id="getOtherActiveProcessByPage" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from process_info
+    where status = 1 and deleted = false
+    and form_id != #{currentFormId}
+    order by form_id
+    <if test="pageParam != null">
+      offset #{pageParam.offset} limit #{pageParam.pageSize}
+    </if>
+  </select>
+
+  <select id="getActiveProcessByPage" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from process_info
+    where status = 1 and deleted = false
+    <if test="processName != null and !processName.equals('')">
+      and process_name ilike concat('%', #{processName}, '%')
+    </if>
+    order by form_id
+    <if test="pageParam != null">
+      offset #{pageParam.offset} limit #{pageParam.pageSize}
+    </if>
+  </select>
+
+  <select id="getActiveProcessCount" resultType="java.lang.Long">
+    select count(1) from process_info
+    where status = 1 and deleted = false
+    <if test="processName != null and !processName.equals('')">
+      and process_name ilike concat('%', #{processName}, '%')
+    </if>
+  </select>
+
+  <select id="getActiveProcessByFormId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from process_info
+    where status = 1 and deleted = false
+    and form_id = #{formId}
+  </select>
+
+  <select id="getActiveProcessByProcessDefinitionKey" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from process_info
+    where status = 1 and deleted = false
+    and process_definition_key = #{processDefinitionKey}
+  </select>
+
+</mapper>

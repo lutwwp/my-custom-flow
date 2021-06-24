@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yusei.dao.FieldValueDao">
+  <resultMap id="BaseResultMap" type="com.yusei.model.entity.FieldValue">
+    <id column="field_value_id" property="fieldValueId"/>
+    <result column="form_id" property="formId"/>
+    <result column="field_id" property="fieldId"/>
+    <result column="field_type" property="fieldType"/>
+    <result column="field_value" property="fieldValue"/>
+    <result column="primary_key_value" property="primaryKeyValue"/>
+  </resultMap>
+
+  <sql id="Base_Field">
+    field_value_id, form_id, field_id, field_type, field_value, primary_key_value, group_id
+  </sql>
+
+  <insert id="insertBatch" parameterType="com.yusei.model.entity.FieldValue">
+    insert into field_value(<include refid="Base_Field"/>) values
+    <foreach collection="list" item="item" separator=",">
+      (
+      #{item.fieldValueId}, #{item.formId}, #{item.fieldId},  #{item.fieldType},
+      #{item.fieldValue}, #{item.primaryKeyValue}, #{item.groupId}
+      )
+    </foreach>
+  </insert>
+
+  <update id="updateBatch" parameterType="com.yusei.model.entity.FieldValue">
+    <foreach collection="list" item="item" separator=";">
+      update field_value
+      set field_value = #{item.fieldValue}
+      where field_value_id = #{item.fieldValueId}
+    </foreach>
+  </update>
+
+  <select id="getByFormIdAndPrimaryKeyValue" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Field"/>
+    from field_value
+    where form_id = #{formId} and primary_key_value = #{primaryKeyValue}
+  </select>
+
+  <select id="getPrimaryKeyValueByPage" resultType="java.lang.Long">
+    select primary_key_value from field_value
+    where form_id = #{formId} and field_type = 'PRIMARY_KEY'
+    <if test="pageParam != null">
+      limit #{pageParam.pageSize} offset #{pageParam.offset}
+    </if>
+  </select>
+
+  <select id="countFormData" resultType="java.lang.Long">
+    select count(1) from field_value
+    where form_id = #{formId} and field_type = 'PRIMARY_KEY'
+  </select>
+
+  <select id="getLinkFormPrimaryKeyValue" resultType="java.lang.Long">
+    select primary_key_value from field_value
+    where form_id = #{formId} and field_id = #{fieldId}
+    <if test="sqlCommandFilter != null and !sqlCommandFilter.equals('')">
+      and ${sqlCommandFilter}
+    </if>
+    limit 1
+  </select>
+
+  <select id="getByFormIdAndFieldId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Field"/>
+    from field_value
+    where form_id = #{formId} and field_id = #{fieldId}
+  </select>
+</mapper>

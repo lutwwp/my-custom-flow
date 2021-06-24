@@ -1,0 +1,16 @@
+# Configure this base application Server
+server:
+  port: 8898
+
+spring:
+    # 环境 dev|test|prod
+    profiles:
+        active: dev
+
+  
+### MyBatis ###
+mybatis:
+  mapper-locations: classpath*:mapper/**/*.xml
+  configuration:
+    cache-enabled: true
+    map-underscore-to-camel-case: true

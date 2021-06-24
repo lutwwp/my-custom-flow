@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+
+  xmlns:activiti="http://activiti.org/bpmn"
+
+  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+
+  xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC"
+
+  xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI"
+
+  typeLanguage="http://www.w3.org/2001/XMLSchema"
+
+  expressionLanguage="http://www.w3.org/1999/XPath"
+
+  targetNamespace="http://www.activiti.org/test">
+
+  <process id="withSubProcess" name="My First process" isExecutable="true">
+
+    <startEvent id="theStart" name="Start"/>
+
+    <sequenceFlow id="flow1" sourceRef="theStart" targetRef="task1"/>
+
+    <userTask id="task1" name="HelloWorld" activiti:assignee="zhuman"/>
+
+    <sequenceFlow id="flow2" sourceRef="task1" targetRef="subProcess"/>
+
+    <callActivity id="subProcess" name="Check credit" calledElement="weekend" >
+      <extensionElements>
+        <activiti:in target="processDefinitionId" source="weekend"/>
+        <activiti:out target="processFail" source="subProcessFail"/>
+      </extensionElements>
+    </callActivity>
+
+    <sequenceFlow id="flow3" sourceRef="subProcess" targetRef="task2">
+      <conditionExpression xsi:type="tFormalExpression">
+        <![CDATA[${!subProcessFail}]]>
+      </conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow4" sourceRef="subProcess" targetRef="errorEnd">
+      <conditionExpression xsi:type="tFormalExpression">
+        <![CDATA[${subProcessFail}]]>
+      </conditionExpression>
+    </sequenceFlow>
+
+    <userTask id="task2" name="子流程成功啦" activiti:assignee="zhuman"/>
+
+    <sequenceFlow id="flow5" sourceRef="task2" targetRef="theEnd"/>
+
+    <endEvent id="theEnd" name="End"/>
+    <endEvent id="errorEnd" name="End"/>
+  </process>
+
+</definitions>

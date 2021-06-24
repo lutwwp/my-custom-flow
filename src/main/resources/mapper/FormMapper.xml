@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yusei.dao.FormDao">
+  <resultMap id="BaseResultMap" type="com.yusei.model.entity.Form">
+    <id column="form_id" property="formId"/>
+    <result column="form_name" property="formName"/>
+    <result column="form_type" property="formType"/>
+  </resultMap>
+
+  <sql id="Base_field">
+    form_id, form_name, form_type
+  </sql>
+
+  <insert id="insertEntity" parameterType="com.yusei.model.entity.Form">
+    insert into form
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="formId != null">form_id,</if>
+      <if test="formName != null">form_name,</if>
+      <if test="formType != null">form_type,</if>
+    </trim>
+    <trim prefix="values(" suffix=")" suffixOverrides=",">
+      <if test="formId != null">#{formId},</if>
+      <if test="formName != null">#{formName},</if>
+      <if test="formType != null">#{formType},</if>
+    </trim>
+  </insert>
+  <update id="updateEntity" parameterType="com.yusei.model.entity.Form">
+    update form set form_name = #{formName}, form_type = #{formType}
+    where form_id = #{formId}
+  </update>
+
+  <select id="getFormByPage" resultMap="BaseResultMap">
+    select
+    <include refid="Base_field"/>
+    from form
+    <where>
+      <if test="queryParam.formName != null and !queryParam.formName.equals('')">
+        form_name ilike concat('%', #{queryParam.formName}, '%')
+      </if>
+    </where>
+    <if test="pageParam != null">
+      limit #{pageParam.pageSize} offset #{pageParam.offset}
+    </if>
+  </select>
+
+  <select id="getById" resultMap="BaseResultMap">
+    select
+    <include refid="Base_field"/>
+    from form
+    where form_id = #{formId}
+  </select>
+</mapper>

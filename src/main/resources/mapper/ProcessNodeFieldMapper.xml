@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yusei.dao.ProcessNodeFieldDao">
+  <resultMap id="BaseResultMap" type="com.yusei.model.entity.ProcessNodeField">
+    <id column="process_node_field_id" property="processNodeFieldId"/>
+    <result column="process_info_id" property="processInfoId"/>
+    <result column="process_definition_key" property="processDefinitionKey"/>
+    <result column="task_definition_key" property="taskDefinitionKey"/>
+    <result column="form_id" property="formId"/>
+    <result column="field_id" property="fieldId"/>
+    <result column="show_field" property="showField"/>
+    <result column="edit_field" property="editField"/>
+    <result column="summary" property="summary"/>
+  </resultMap>
+
+  <sql id="Base_Field">
+    process_node_field_id, process_info_id, process_definition_key, task_definition_key, form_id,
+    field_id, show_field, edit_field, summary
+  </sql>
+
+  <insert id="insertBatch" parameterType="com.yusei.model.entity.ProcessNodeField">
+    insert into process_node_field(<include refid="Base_Field"/>) values
+    <foreach collection="list" item="item" separator=",">
+      (
+      #{item.processNodeFieldId}, #{item.processInfoId}, #{item.processDefinitionKey}, #{item.taskDefinitionKey},
+      #{item.formId}, #{item.fieldId}, #{item.showField}, #{item.editField}, #{item.summary}
+      )
+    </foreach>
+  </insert>
+
+  <select id="getByProcessInfoId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Field"/>
+    from process_node_field
+    where process_info_id = #{processInfoId}
+  </select>
+
+  <delete id="deleteByProcessInfoId">
+    delete from process_node_field
+    where process_info_id = #{processInfoId}
+  </delete>
+
+  <select id="getByInfoIdAndTaskKey" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Field"/>
+    from process_node_field
+    where process_info_id = #{processInfoId}
+    <if test="taskDefinitionKey != null and !taskDefinitionKey.equals('')">
+      and task_definition_key = #{taskDefinitionKey}
+    </if>
+    order by field_id
+  </select>
+
+</mapper>

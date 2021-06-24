@@ -1,0 +1,30 @@
+logging:
+  level:
+    root: info
+    com.yusei: debug
+
+spring:
+  datasource:
+    platform: postgres
+#    url: jdbc:postgresql://192.168.0.127:5433/test2
+#    username: metasfresh
+#    password: metasfresh
+    url: jdbc:postgresql://localhost:5432/test
+    username: postgres
+    password: 123456
+
+  activiti:
+    database-schema-update: true
+    process-definition-location-prefix: "classpath*:/processes/*.bpmn"
+    history-level: full
+    db-history-used: true #配置生成history表,默认false,只会生成17张表
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+  jackson:
+    date-format: yyyy-MM-dd'T'HH:mm:ssX
+    time-zone: GMT+8

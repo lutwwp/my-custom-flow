@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yusei.dao.ProcessGuarderAbilityDao">
+  <resultMap id="BaseResultMap" type="com.yusei.model.entity.ProcessGuarderAbility">
+    <id column="process_guarder_ability_id" property="processGuarderAbilityId"/>
+    <result column="process_info_id" property="processInfoId"/>
+    <result column="process_definition_key" property="processDefinitionKey"/>
+    <result column="process_definition_id" property="processDefinitionId"/>
+    <result column="user_id" property="userId"/>
+    <result column="process_function" property="processFunction"/>
+  </resultMap>
+
+  <sql id="Base_field">
+    process_guarder_ability_id, process_info_id, process_definition_key, process_definition_id,
+    user_id, process_function
+  </sql>
+
+  <insert id="insertBatch" parameterType="com.yusei.model.entity.ProcessGuarderAbility">
+    insert into process_guarder_ability(<include refid="Base_field"/>) values
+    <foreach collection="list" item="item" separator=",">
+      (
+      #{item.processGuarderAbilityId}, #{item.processInfoId}, #{item.processDefinitionKey},
+      #{item.processDefinitionId}, #{item.userId}, #{item.processFunction}
+      )
+    </foreach>
+  </insert>
+
+  <delete id="deleteByProcessInfoId">
+    delete from process_guarder_ability
+    where process_info_id = #{processInfoId}
+  </delete>
+
+  <select id="getByProcessInfoId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_field"/>
+    from process_guarder_ability
+    where process_info_id = #{processInfoId}
+  </select>
+
+  <select id="getByProcessInfoIdAndUserId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_field"/>
+    from process_guarder_ability
+    where process_info_id = #{processInfoId} and user_id = #{userId}
+  </select>
+
+</mapper>

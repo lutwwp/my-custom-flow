@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yusei.dao.FieldExtendRuleDetailDao">
+
+    <!-- 插入多条记录的sql -->
+    <sql id="insertBatchSql">
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                field_extend_rule_detail_id,
+                field_extend_rule_id,
+                rule,
+                value,
+        </trim>
+        <trim prefix="values " suffixOverrides=",">
+            <foreach collection="list" item="item" index="index" separator="," >
+                (
+                #{item.fieldExtendRuleDetailId},
+                #{item.fieldExtendRuleId,jdbcType=BIGINT},
+                #{item.rule,jdbcType=VARCHAR},
+                #{item.value,jdbcType=VARCHAR}
+                )
+            </foreach>
+        </trim>
+    </sql>
+    <delete id="deleteByExtendRuleIdList">
+        delete from field_extend_rule_detail
+        where field_extend_rule_id in
+        <foreach collection="list" item="ruleId" open="(" close=")" separator=",">
+            #{ruleId}
+        </foreach>
+    </delete>
+
+    <select id="selectListByRuleIdList" resultType="com.yusei.model.entity.FieldExtendRuleDetail">
+        select * from field_extend_rule_detail
+        where field_extend_rule_id in
+        <foreach collection="list" item="ruleId" open="(" close=")" separator=",">
+            #{ruleId}
+        </foreach>
+    </select>
+
+
+    <insert id="insertBatch" parameterType="com.yusei.model.entity.FieldExtendRuleDetail">
+        INSERT INTO
+          field_extend_rule_detail
+        <include refid="insertBatchSql" />
+    </insert>
+
+</mapper>

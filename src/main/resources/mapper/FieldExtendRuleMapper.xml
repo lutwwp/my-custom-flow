@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yusei.dao.FieldExtendRuleDao">
+
+    <!-- 用record封装查询条件的sql -->
+    <sql id="RecordSql">
+        <if test="fieldExtendRuleId != null">
+            AND field_extend_rule_id = #{fieldExtendRuleId,jdbcType=BIGINT}
+        </if>
+        <if test="formId != null">
+            AND form_id = #{formId,jdbcType=BIGINT}
+        </if>
+        <if test="fieldId != null">
+            AND field_id = #{fieldId,jdbcType=BIGINT}
+        </if>
+        <if test="type != null">
+            AND type = #{type,jdbcType=VARCHAR}
+        </if>
+        <if test="name != null">
+            AND name = #{name,jdbcType=VARCHAR}
+        </if>
+    </sql>
+    <!-- 插入多条记录的sql -->
+    <sql id="insertBatchSql">
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                field_extend_rule_id,
+                form_id,
+                field_id,
+                type,
+                name,
+        </trim>
+        <trim prefix="values " suffixOverrides=",">
+            <foreach collection="list" item="item" index="index" separator="," >
+                (
+                #{item.fieldExtendRuleId},
+                #{item.formId,jdbcType=BIGINT},
+                #{item.fieldId,jdbcType=BIGINT},
+                #{item.type,jdbcType=VARCHAR},
+                #{item.name,jdbcType=VARCHAR}
+                )
+            </foreach>
+        </trim>
+    </sql>
+
+    <delete id="deleteByExtendRuleIdList">
+        delete from field_extend_rule where field_extend_rule_id in
+        <foreach collection="list" item="ruleId" separator="," open="(" close=")">
+            #{ruleId}
+        </foreach>
+    </delete>
+
+    <select id="selectByRecord" resultType="com.yusei.model.entity.FieldExtendRule">
+        SELECT
+          *
+        FROM
+          field_extend_rule
+        <where>
+            <include refid="RecordSql" />
+        </where>
+    </select>
+    <select id="selectByFieldIdList" resultType="com.yusei.model.entity.FieldExtendRule">
+        select * from field_extend_rule where field_id in
+        <foreach collection="list" item="fieldId" separator="," open="(" close=")">
+            #{fieldId}
+        </foreach>
+    </select>
+
+
+    <insert id="insertBatch" parameterType="com.yusei.model.entity.FieldExtendRule">
+        INSERT INTO
+          field_extend_rule
+        <include refid="insertBatchSql" />
+    </insert>
+
+</mapper>

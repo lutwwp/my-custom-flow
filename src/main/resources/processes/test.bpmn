@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+  xmlns:activiti="http://activiti.org/bpmn" targetNamespace="http://www.activiti.org/test"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath">
+  <process id="form7743370387622208" name="ABC" isExecutable="true">
+    <startEvent id="startEvent"/>
+    <sequenceFlow id="startFlow" sourceRef="startEvent" targetRef="theStart"/>
+    <manualTask id="theStart" name="开始节点"/>
+    <endEvent id="endError" name="失败节点"/>
+    <endEvent id="endSuccess" name="结束节点"/>
+    <userTask id="dom78302732-bcec-4407-9a79-dfe9aa1e2879" name="B" activiti:assignee="1"/>
+    <userTask id="form7743370387622208-7ddb5709-0b92-4067-8095-393acd91cbb1" name="C"
+      activiti:assignee="1"/>
+    <sequenceFlow id="linef589b7ed-b156-411b-8d76-9cbc8dc99744" sourceRef="theStart"
+      targetRef="dom78302732-bcec-4407-9a79-dfe9aa1e2879"/>
+    <sequenceFlow id="line48763175-f212-475b-b21a-7771cd5b4548"
+      sourceRef="dom78302732-bcec-4407-9a79-dfe9aa1e2879"
+      targetRef="form7743370387622208-9cf96f45-f885-440a-a6df-3d1681f39c6d"/>
+    <sequenceFlow id="line1c609a41-25e6-45a6-9e1d-8dc8060a6b65" name="子流程失败"
+      sourceRef="form7743370387622208-9cf96f45-f885-440a-a6df-3d1681f39c6d" targetRef="endError">
+      <extensionElements>
+        <activiti:executionListener
+          class="com.yusei.listener.EndErrorFlowListener"></activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression">
+        <![CDATA[${subProcessFail}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="linedb3f9ed1-4114-41e8-ae70-f9706c3f5ba7" name="子流程成功"
+      sourceRef="form7743370387622208-9cf96f45-f885-440a-a6df-3d1681f39c6d"
+      targetRef="form7743370387622208-7ddb5709-0b92-4067-8095-393acd91cbb1">
+      <conditionExpression xsi:type="tFormalExpression">
+        <![CDATA[${!subProcessFail}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="lined2e66213-2edf-4dc8-9007-5f54f78bc3cb"
+      sourceRef="form7743370387622208-7ddb5709-0b92-4067-8095-393acd91cbb1" targetRef="endSuccess"/>
+    <callActivity activiti:exclusive="true" calledElement="form7743374374308160"
+      id="form7743370387622208-9cf96f45-f885-440a-a6df-3d1681f39c6d" name="ZI"/>
+  </process>
+</definitions>

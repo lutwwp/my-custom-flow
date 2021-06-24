@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" targetNamespace="http://activiti.org/bpmn20" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn">
+  <process id="weekend" name="周末">
+    <startEvent id="startEvent"/>
+    <sequenceFlow id="startFlow" sourceRef="startEvent" targetRef="theStart"/>
+    <manualTask id="theStart" name="开始节点"/>
+    <sequenceFlow id="flow1" sourceRef="theStart" targetRef="task1"/>
+    <userTask id="task1" name="吃饭" activiti:candidateUsers="zhuman,zm,jackman" />
+    <sequenceFlow id="flow2" sourceRef="task1" targetRef="task2">
+      <!--<extensionElements>-->
+        <!--<activiti:executionListener class="com.yusei.listener.EndEventListener"/>-->
+      <!--</extensionElements>-->
+    </sequenceFlow>
+    <userTask id="task2" name="打游戏" activiti:candidateUsers="zhuman,zm"/>
+    <sequenceFlow id="flow3" sourceRef="task2" targetRef="task3">
+      <!--<conditionExpression xsi:type="tFormalExpression">-->
+        <!--<![CDATA[${!processFail}]]>-->
+      <!--</conditionExpression>-->
+    </sequenceFlow>
+    <!--<sequenceFlow id="flow5" sourceRef="task2" targetRef="theEnd">-->
+      <!--<conditionExpression xsi:type="tFormalExpression">-->
+        <!--<![CDATA[${processFail}]]>-->
+      <!--</conditionExpression>-->
+    <!--</sequenceFlow>-->
+    <userTask id="task3" name="睡觉" activiti:candidateUsers="zhuman,jackman"/>
+    <sequenceFlow id="flow4" sourceRef="task3" targetRef="theEnd"/>
+    <endEvent id="theEnd"/>
+  </process>
+</definitions>

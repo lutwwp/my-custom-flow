@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yusei.dao.FieldDao">
+  <resultMap id="BaseResultMap" type="com.yusei.model.entity.Field">
+    <id column="field_id" property="fieldId"/>
+    <result column="form_id" property="formId"/>
+    <result column="field_code" property="fieldCode"/>
+    <result column="order_number" property="orderNumber"/>
+    <result column="field_name" property="fieldName"/>
+    <result column="field_type" property="fieldType"/>
+    <result column="link_form_id" property="linkFormId"/>
+    <result column="link_field_id" property="linkFieldId"/>
+    <result column="default_value_type" property="defaultValueType"/>
+    <result column="default_value" property="defaultValue"/>
+    <result column="necessary" property="necessary"/>
+    <result column="allow_repeated" property="allowRepeated"/>
+    <result column="show_field" property="showField"/>
+    <result column="edit_field" property="editField"/>
+  </resultMap>
+
+  <sql id="Base_Field">
+    field_id, form_id, field_code, order_number, field_name, field_type, link_form_id, link_field_id,
+    default_value_type, default_value, necessary, allow_repeated, show_field, edit_field
+  </sql>
+
+  <insert id="insertBatch" parameterType="com.yusei.model.entity.Field">
+    insert into field(<include refid="Base_Field"/>) values
+    <foreach collection="list" item="item" separator=",">
+      (
+      #{item.fieldId}, #{item.formId}, #{item.fieldCode}, #{item.orderNumber}, #{item.fieldName},
+      #{item.fieldType}, #{item.linkFormId}, #{item.linkFieldId}, #{item.defaultValueType}, #{item.defaultValue},
+      #{item.necessary}, #{item.allowRepeated}, #{item.showField},  #{item.editField}
+      )
+    </foreach>
+  </insert>
+  <delete id="deleteByFieldIdList">
+    delete from field where field_id in
+    <foreach collection="list" item="fieldId" separator="," open="(" close=")">
+      #{fieldId}
+    </foreach>
+  </delete>
+  <delete id="deleteByFormId">
+    delete from field where form_id = #{formId}
+  </delete>
+
+  <select id="getFieldInfoByFormId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Field"/>
+    from field
+    where form_id = #{formId}
+    order by order_number
+  </select>
+
+  <select id="getFieldInfoById" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Field"/>
+    from field
+    where field_id = #{fieldId}
+  </select>
+
+  <select id="getPrimaryKeyByFormId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Field"/>
+    from field
+    where form_id = #{formId} and field_code = 'primary_key'
+  </select>
+  <select id="getFieldByFormIdList" resultType="com.yusei.model.entity.Field">
+    select
+    <include refid="Base_Field"/>
+    from field
+    where form_id in
+    <foreach collection="list" item="item" open="(" close=")" separator=",">
+      #{item}
+    </foreach>
+  </select>
+</mapper>

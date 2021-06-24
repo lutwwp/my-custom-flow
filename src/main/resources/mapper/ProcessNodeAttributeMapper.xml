@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yusei.dao.ProcessNodeAttributeDao">
+  <resultMap id="BaseResultMap" type="com.yusei.model.entity.ProcessNodeAttribute">
+    <id column="process_node_attribute_id" property="processNodeAttributeId"/>
+    <id column="process_info_id" property="processInfoId"/>
+    <result column="process_definition_key" property="processDefinitionKey"/>
+    <result column="process_definition_id" property="processDefinitionId"/>
+    <result column="task_definition_key" property="taskDefinitionKey"/>
+    <result column="roll_back" property="rollBack"/>
+    <result column="revoke" property="revoke"/>
+  </resultMap>
+
+  <sql id="Base_Field">
+    process_node_attribute_id, process_info_id, process_definition_key, process_definition_id,
+    task_definition_key, roll_back, revoke
+  </sql>
+
+  <insert id="insertBatch" parameterType="com.yusei.model.entity.ProcessNodeAttribute">
+    insert into process_node_attribute(<include refid="Base_Field"/>) values
+    <foreach collection="list" item="item" separator=",">
+      (
+      #{item.processNodeAttributeId}, #{item.processInfoId}, #{item.processDefinitionKey},
+      #{item.processDefinitionId}, #{item.taskDefinitionKey}, #{item.rollBack}, #{item.revoke}
+      )
+    </foreach>
+  </insert>
+
+  <select id="getByProcessInfoId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Field"/>
+    from process_node_attribute
+    where process_info_id = #{processInfoId}
+  </select>
+
+  <delete id="deleteByProcessInfoId">
+    delete from process_node_attribute
+    where process_info_id = #{processInfoId}
+  </delete>
+
+  <select id="getByProcessInfoIdAndTaskKey" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Field"/>
+    from process_node_attribute
+    where process_info_id = #{processInfoId}
+    <if test="taskDefinitionKey != null">
+      and task_definition_key = #{taskDefinitionKey}
+    </if>
+  </select>
+</mapper>
